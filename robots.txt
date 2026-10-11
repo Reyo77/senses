@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sensesphysiotherapy.com/sitemap.xml
