@@ -267,8 +267,8 @@ def ld(obj): return '<script type="application/ld+json">' + json.dumps(obj, ensu
 def svc_cards(r, items=SERVICES):
     out = []
     for i, s in enumerate(items):
-        out.append(f'''<article class="s-card rv" style="--d:{(i%4)*.08:.2f}s"><div class="s-img"><img src="{r}img/{s["img"]}.webp" alt="{e(s["alt"])}" width="700" height="450" loading="lazy"></div>
-<div class="s-body"><span class="s-ic">{ic(s["icon"])}</span><h3><a href="{r}services/{s["slug"]}/">{e(s["name"])}</a></h3><p>{e(s["short"])}</p><span class="more">Learn more {ic("arrow")}</span></div></article>''')
+        out.append(f'''<a class="s-card rv" href="{r}services/{s["slug"]}/" aria-label="{e(s["name"])}: learn more" style="--d:{(i%4)*.08:.2f}s"><div class="s-img"><img src="{r}img/{s["img"]}.webp" alt="{e(s["alt"])}" width="700" height="450" loading="lazy"></div>
+<div class="s-body"><span class="s-ic">{ic(s["icon"])}</span><h3>{e(s["name"])}</h3><p>{e(s["short"])}</p><span class="more">Learn more {ic("arrow")}</span></div></a>''')
     return "\n".join(out)
 
 def faq_html(items):
