@@ -78,6 +78,10 @@
     $$('.dlg-x', dlg).forEach(function (x) { x.addEventListener('click', function () { dlg.close(); }); });
   }
 
+  /* highlight today's hours */
+  var dow = String(new Date().getDay());
+  $$('.hours tr').forEach(function (tr) { if (tr.dataset.d === dow) tr.classList.add('today'); });
+
   /* footer year */
   $$('.yr').forEach(function (n) { n.textContent = new Date().getFullYear(); });
 })();

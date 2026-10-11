@@ -186,6 +186,21 @@ FAQ = [
  ("What treatments do you offer?","Physiotherapy, acupuncture, laser therapy, exercise rehab, vestibular & balance therapy, TMJ therapy, cupping, spinal decompression, ConnecTherapy and osteopathy, plus massage therapy."),
 ]
 
+# Hours from Google Maps (Mon regular hours not shown by Google on a holiday, so omitted)
+BASE_H = [("Tuesday","08:00","19:00"),("Wednesday","11:00","20:00"),("Thursday","08:00","19:00"),("Friday","11:00","19:00"),("Saturday","10:00","13:00")]
+CH_H = [("Tuesday","13:00","20:00"),("Wednesday","07:00","13:00"),("Thursday","12:00","20:00"),("Friday","07:00","13:00")]
+BASE_TXT = [(1,"Mon","Varies - see booking"),(2,"Tue","8 am - 7 pm"),(3,"Wed","11 am - 8 pm"),(4,"Thu","8 am - 7 pm"),(5,"Fri","11 am - 7 pm"),(6,"Sat","10 am - 1 pm"),(0,"Sun","Closed")]
+CH_TXT = [(1,"Mon","Varies - see booking"),(2,"Tue","1 pm - 8 pm"),(3,"Wed","7 am - 1 pm"),(4,"Thu","12 pm - 8 pm"),(5,"Fri","7 am - 1 pm"),(6,"Sat","Closed"),(0,"Sun","Closed")]
+MAP_BASE = "https://www.google.com/maps/place/Senses+Physiotherapy+Clinic/@45.3357385,-75.7992949,17z/data=!4m6!3m5!1s0x4cce00b6ca9a89c5:0x7f89d3578986cf69!8m2!3d45.3357385!4d-75.7992949"
+MAP_CH = "https://www.google.com/maps/place/Senses+Physiotherapy+Clinic/@45.3323947,-75.770038,17z/data=!4m6!3m5!1s0x4cce07a9ec85437f:0xb4172ad86b04fde9!8m2!3d45.3323947!4d-75.770038"
+REVIEWS = [
+ ("Nidhi P.","Baseline","The staff are professional, friendly, and really take the time to understand your concerns. The treatment plan was clear and effective, and I noticed improvement quickly.",MAP_BASE),
+ ("Ashish P.","Craig Henry Plaza","The team is very knowledgeable and explains everything clearly, focusing on long-term recovery. The staff is supportive and ensures exercises are done properly. I've seen significant improvement.",MAP_CH),
+ ("Divina H.","Craig Henry Plaza","The Senses Physio & Massage Clinic are absolutely wonderful. Kumar has always been exceptional in helping me out and listening to my needs.",MAP_CH),
+]
+def hours_html(rows):
+    return '<table class="hours"><caption class="sr">Opening hours</caption>' + "".join(f'<tr data-d="{d}"><th scope="row">{n}</th><td>{t}</td></tr>' for d, n, t in rows) + '</table>'
+
 def e(s): return html.escape(s, quote=True)
 
 def head(r, title, desc, path, extra="", og_img="img/og.jpg"):
@@ -251,16 +266,17 @@ def footer(r):
 </body></html>'''
 
 def org_schema():
-    def clinic(name, street, pc, geo, url):
+    def clinic(name, street, pc, geo, url, hours):
         return {"@type": ["Physiotherapy", "MedicalBusiness", "LocalBusiness"], "@id": f"{SITE}/#{url}", "name": name,
           "url": SITE, "telephone": PHONE_I, "email": EMAIL, "image": f"{SITE}/img/og.jpg", "logo": f"{SITE}/img/icon-512.png",
           "priceRange": "$$", "medicalSpecialty": "Physiotherapy",
           "address": {"@type": "PostalAddress", "streetAddress": street, "addressLocality": "Ottawa", "addressRegion": "ON", "postalCode": pc, "addressCountry": "CA"},
           "geo": {"@type": "GeoCoordinates", "latitude": geo[0], "longitude": geo[1]},
           "areaServed": ["Ottawa", "Nepean", "Barrhaven", "Kanata"],
+          "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": d, "opens": o, "closes": c} for d, o, c in hours],
           "sameAs": [IG, FB], "potentialAction": {"@type": "ReserveAction", "target": BOOK, "name": "Book an appointment"}}
-    return [clinic("Senses Physiotherapy Clinic - Baseline", "2944 Baseline Rd", "K2H 7T3", (45.3323947, -75.770038), "baseline"),
-            clinic("Senses Physiotherapy Clinic - Craig Henry Plaza", "3 Chartwell Ave", "K2G 4K3", (45.3357385, -75.7992949), "craig-henry")]
+    return [clinic("Senses Physiotherapy Clinic - Baseline", "2944 Baseline Rd", "K2H 7T3", (45.3357385, -75.7992949), "baseline", BASE_H),
+            clinic("Senses Physiotherapy Clinic - Craig Henry Plaza", "3 Chartwell Ave Unit 5", "K2G 4K3", (45.3323947, -75.770038), "craig-henry", CH_H)]
 
 def ld(obj): return '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False, separators=(",", ":")) + "</script>"
 
@@ -299,6 +315,7 @@ def home():
     marq = ["Back pain","Neck pain","Sports injuries","Sciatica","Frozen shoulder","Post-surgery rehab","Dizziness & balance","Jaw pain (TMJ)","Arthritis","Tendinopathy","Posture","Stress & tension"]
     mq = "".join(f"<span>{m}</span>" for m in marq) * 2
     ig_tiles = "".join(f'<a href="{IG}" rel="noopener" aria-label="Instagram post"><img src="img/{p}.webp" alt="" width="200" height="200" loading="lazy"></a>' for p in ["photo4","photo6","photo2"])
+    rev_cards = "".join(f'<figure class="rcard rv" style="--d:{i*.1:.1f}s"><div class="stars" aria-label="5 out of 5 stars">★★★★★</div><blockquote>{e(t)}</blockquote><figcaption><b>{e(n)}</b><span>Google review · {e(c)}</span></figcaption></figure>' for i, (n, c, t, u) in enumerate(REVIEWS))
     stats = ""
     for n, suf, lab in [(55000, "+", "patients served"), (13, "+", "years of experience"), (10, "", "specialized treatments"), (2, "", "Ottawa clinics")]:
         stats += f'<div class="rv"><b data-to="{n}" data-suf="{suf}">{n:,}{suf}</b><span>{lab}</span></div>'
@@ -317,7 +334,7 @@ def home():
 <div class="mini"><img src="img/photo5.webp" alt="Smiling patient" width="130" height="130"></div>
 <div class="chip c1"><span class="ic">{ic("shield")}</span><div><b>Since 2019</b><span>Trusted Ottawa care</span></div></div>
 <div class="chip c2"><span class="ic">{ic("users")}</span><div><b>5 clinicians</b><span>Physio · Osteo · RMT</span></div></div>
-<div class="chip c3"><span class="ic">{ic("star")}</span><div><b>Hands-on</b><span>+ advanced tech</span></div></div></div>
+<div class="chip c3"><span class="ic">{ic("star")}</span><div><b>4.9 on Google</b><span>200+ reviews</span></div></div></div>
 </div></section>
 <div class="marquee" aria-label="Conditions we treat"><div class="track">{mq}</div></div>
 
@@ -360,17 +377,23 @@ def home():
 <a class="btn btn-ig btn-lg" href="{IG}" rel="noopener">{ic("ig")} Follow @sensesphysiotherapy</a></div>
 </div></section>
 
+<section class="section" id="reviews"><div class="wrap"><div class="head center rv"><span class="eyebrow">Patient reviews</span><h2>Rated <span class="grad">4.9</span> on Google</h2><p>Over 200 reviews across both clinics.</p></div>
+<div class="grid three">{rev_cards}</div>
+<p class="rv" style="text-align:center;margin-top:30px"><a class="btn btn-ghost" href="{MAP_BASE}" rel="noopener">Read all reviews on Google {ic("arrow")}</a></p></div></section>
+
 <section class="section alt" id="faq"><div class="wrap"><div class="head center rv"><span class="eyebrow">FAQ</span><h2>Quick answers</h2></div>
 <div class="faq">{faq_html(FAQ)}</div></div></section>
 
 <section class="section" id="locations"><div class="wrap"><div class="head center rv"><span class="eyebrow">Find us</span><h2>Two clinics, <span class="grad">one team</span></h2></div>
 <div class="grid locs">
 <article class="loc rv"><iframe loading="lazy" title="Map: Senses Physiotherapy Baseline" src="https://maps.google.com/maps?q=2944+Baseline+Rd+Ottawa+ON&amp;output=embed" referrerpolicy="no-referrer-when-downgrade"></iframe>
-<div class="loc-b"><h3>Baseline</h3><ul><li>{ic("pin")}2944 Baseline Rd, Ottawa, ON K2H 7T3</li><li>{ic("phone")}<a href="tel:{PHONE_I}">{PHONE}</a></li><li>{ic("users")}Honey · Kumar · Ritu · Sweta · Tonya</li></ul>
-<div class="cta-row"><a class="btn btn-primary" href="{BOOK_BASE}">Book here</a><a class="btn btn-ghost" href="https://www.google.com/maps/place/Senses+Physiotherapy+Clinic/@45.3323947,-75.7726129,17z" rel="noopener">Directions</a></div></div></article>
+<div class="loc-b"><h3>Baseline <span class="rate">{ic("star")} 4.9 <small>(163 Google reviews)</small></span></h3><ul><li>{ic("pin")}Main floor, Brigil Tower (shared entrance with IDEAL Pharmacy), 2944 Baseline Rd, Ottawa, ON K2H 7T3</li><li>{ic("phone")}<a href="tel:{PHONE_I}">{PHONE}</a></li><li>{ic("users")}Honey · Kumar · Ritu · Sweta · Tonya</li></ul>
+{hours_html(BASE_TXT)}
+<div class="cta-row"><a class="btn btn-primary" href="{BOOK_BASE}">Book here</a><a class="btn btn-ghost" href="{MAP_BASE}" rel="noopener">Directions</a></div></div></article>
 <article class="loc rv" style="--d:.1s"><iframe loading="lazy" title="Map: Senses Physiotherapy Craig Henry Plaza" src="https://maps.google.com/maps?q=3+Chartwell+Ave+Ottawa+ON&amp;output=embed" referrerpolicy="no-referrer-when-downgrade"></iframe>
-<div class="loc-b"><h3>Craig Henry Plaza</h3><ul><li>{ic("pin")}3 Chartwell Ave, Ottawa, ON K2G 4K3</li><li>{ic("phone")}<a href="tel:{PHONE_I}">{PHONE}</a></li><li>{ic("users")}Honey · Kumar</li></ul>
-<div class="cta-row"><a class="btn btn-primary" href="{BOOK_CH}">Book here</a><a class="btn btn-ghost" href="https://www.google.com/maps/place/Senses+Physiotherapy+Clinic/@45.3357385,-75.8018698,17z" rel="noopener">Directions</a></div></div></article>
+<div class="loc-b"><h3>Craig Henry Plaza <span class="rate">{ic("star")} 5.0 <small>(44 Google reviews)</small></span></h3><ul><li>{ic("pin")}3 Chartwell Ave, Unit 5, Ottawa, ON K2G 4K3</li><li>{ic("phone")}<a href="tel:{PHONE_I}">{PHONE}</a></li><li>{ic("users")}Honey · Kumar</li></ul>
+{hours_html(CH_TXT)}
+<div class="cta-row"><a class="btn btn-primary" href="{BOOK_CH}">Book here</a><a class="btn btn-ghost" href="{MAP_CH}" rel="noopener">Directions</a></div></div></article>
 </div></div></section>
 {cta_band()}</main>''' + footer(r)
     write("index.html", s)

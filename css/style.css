@@ -301,3 +301,19 @@ footer a:hover{color:var(--sky)}
 .hero-in>*,.why>*,.about>*,.insta>*,.ph-in>*,.two>*,.grid>*{min-width:0}
 .ig-top div:last-child{min-width:0}.ig-top span{display:block;overflow-wrap:anywhere}
 h1,h2,h3{overflow-wrap:anywhere}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.rate{display:inline-flex;align-items:center;gap:5px;font-size:.9rem;font-weight:700;color:var(--p);margin-left:8px;vertical-align:middle}
+.rate svg{width:16px;height:16px;fill:#f5b301;stroke:#f5b301}.rate small{font-weight:500;color:var(--mut);font-size:.78rem}
+.hours{width:100%;border-collapse:collapse;margin:0 0 18px;font-size:.9rem}
+.hours th,.hours td{padding:6px 10px;text-align:left;border-bottom:1px solid var(--line)}
+.hours th{font-weight:600;width:64px}.hours td{color:var(--mut)}
+.hours tr.today{background:var(--tint)}.hours tr.today th,.hours tr.today td{color:var(--p);font-weight:700}
+.rcard{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:26px;display:flex;flex-direction:column;gap:14px;transition:.35s var(--ease)}
+.rcard:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.stars{color:#f5b301;letter-spacing:3px;font-size:1.1rem}
+.rcard blockquote{color:var(--ink);flex:1;font-size:.98rem}
+.rcard figcaption b{display:block}.rcard figcaption span{color:var(--mut);font-size:.84rem}
+
+.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:860px){.three{grid-template-columns:minmax(0,1fr)}}
