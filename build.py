@@ -421,6 +421,5 @@ urls = ["/", "/services/"] + [f"/services/{s['slug']}/" for s in SERVICES]
 write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
       "".join(f"<url><loc>{SITE}{u}</loc><lastmod>{TODAY}</lastmod><priority>{'1.0' if u=='/' else '0.8'}</priority></url>\n" for u in urls) + "</urlset>\n")
 write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n")
-write("_redirects", "/about /#about 301\n/pages/contact /#contact 301\n/services /services/ 301\n")
 write("site.webmanifest", json.dumps({"name": "Senses Physiotherapy Clinic", "short_name": "Senses Physio", "start_url": "/", "display": "standalone", "theme_color": "#0b7fd4", "background_color": "#ffffff", "icons": [{"src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png"}]}))
 print("built", len(urls), "pages")

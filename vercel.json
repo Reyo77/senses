@@ -1,0 +1,11 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/about", "destination": "/#about", "permanent": true },
+    { "source": "/pages/contact", "destination": "/#contact", "permanent": true }
+  ],
+  "headers": [
+    { "source": "/(css|js|img)/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }] }
+  ]
+}
