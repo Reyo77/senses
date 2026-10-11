@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generates the static site (index, services/, sitemap, robots).
 Run:  python3 build.py   (edit content below, then re-run)"""
-import json, os, html, datetime
+import json, os, html, datetime, hashlib
 
 SITE = "https://sensesphysiotherapy.com"
 BOOK = "https://kumar.janeapp.com/"
@@ -13,6 +13,8 @@ IG = "https://www.instagram.com/sensesphysiotherapy/"
 FB = "https://www.facebook.com/profile.php?id=61566591580494"
 OUT = os.path.dirname(os.path.abspath(__file__))
 TODAY = datetime.date.today().isoformat()
+def _v(f): return hashlib.md5(open(os.path.join(OUT, f), "rb").read()).hexdigest()[:8]
+V_CSS, V_JS = _v("css/style.css"), _v("js/main.js")
 
 I = {  # inline icons (stroke)
  "arrow": '<path d="M5 12h14M13 6l6 6-6 6"/>',
@@ -49,7 +51,7 @@ I = {  # inline icons (stroke)
  "hand": '<path d="M8 12V5a1.5 1.5 0 013 0v5M11 10V4a1.5 1.5 0 013 0v6M14 10V5.5a1.5 1.5 0 013 0V13M8 12l-1.5-1.8a1.5 1.5 0 00-2.4 1.8L7 17.5A5 5 0 0011.5 21H14a5 5 0 005-5v-3"/>',
 }
 def ic(n, cls=""):
-    return f'<svg class="{cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{I[n]}</svg>'
+    return f'<svg class="{cls}" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{I[n]}</svg>'
 
 SERVICES = [
  dict(slug="physiotherapy", name="Physiotherapy", icon="bone", img="photo1", alt="Athlete holding ankle in pain, a common physiotherapy case",
@@ -225,7 +227,7 @@ def head(r, title, desc, path, extra="", og_img="img/og.jpg"):
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <script>try{{var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)}}catch(e){{}}</script>
-<link rel="stylesheet" href="{r}css/style.css">
+<link rel="stylesheet" href="{r}css/style.css?v={V_CSS}">
 {extra}
 </head>
 <body>
@@ -262,7 +264,7 @@ def footer(r):
 </div><p class="copy">© <span class="yr">2026</span> Senses Physiotherapy Clinic. All rights reserved.</p></footer>
 <a class="btn btn-primary btn-lg float-book" href="{BOOK}">Book Now {ic("arrow")}</a>
 <a class="icon-btn to-top" href="#top" aria-label="Back to top">{ic("up")}</a>
-<script src="{r}js/main.js" defer></script>
+<script src="{r}js/main.js?v={V_JS}" defer></script>
 </body></html>'''
 
 def org_schema():
