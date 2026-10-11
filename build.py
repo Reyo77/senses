@@ -265,6 +265,8 @@ def footer(r):
 <a class="btn btn-primary btn-lg float-book" href="{BOOK}">Book Now {ic("arrow")}</a>
 <a class="icon-btn to-top" href="#top" aria-label="Back to top">{ic("up")}</a>
 <script src="{r}js/main.js?v={V_JS}" defer></script>
+<script>window.va=window.va||function(){{(window.vaq=window.vaq||[]).push(arguments)}};</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body></html>'''
 
 def org_schema():
